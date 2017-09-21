@@ -1,8 +1,8 @@
 var jsDAVlib = require('./jsDAVlib/src/jsDAVlib.js').jsDAVlib;
-require('./jsDAVlib/src/jsDAVXMLParser.js');
-require('./jsDAVlib/src/jsDAVResource.js');
-require('./jsDAVlib/src/jsDAVConnection.js');
-require('./jsDAVlib/src/jsDAVCommunications.js');
+//require('./jsDAVlib/src/jsDAVXMLParser.js');
+//require('./jsDAVlib/src/jsDAVResource.js');
+//require('./jsDAVlib/src/jsDAVConnection.js');
+//require('./jsDAVlib/src/jsDAVCommunications.js');
 
 var myDAVServer = jsDAVlib.getConnection({
     url: 'webcal://p53-calendars.icloud.com/published/2/hu3E_dBzPi6QTRUEdjwaGVAc0X3Vvg-6uVUcUt9Mu07VJ3zuo5ZSy1-yuB640BpuQaSMMwvxfZw5zyvS42ytRcxG3lLgxXlMByMste1wPsQ',
