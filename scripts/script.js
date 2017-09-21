@@ -1,3 +1,5 @@
+var jsDAVlib;
+
 require('./jsDAVlib/src/jsDAVlib.js');
 require('./jsDAVlib/src/jsDAVXMLParser.js');
 require('./jsDAVlib/src/jsDAVResource.js');
