@@ -22,6 +22,6 @@
   },
   "engines": {
     "node": "6.9.x",
-    "npm": "5.x.x"
+    "npm": "3.x.x"
   }
 }
