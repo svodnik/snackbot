@@ -17,14 +17,15 @@ module.exports = function(robot) {
       for (var k in data){
         // identify calendar objects that are actual data,
         // and for which the summary property has a value,
-        // and for which the summary property contains the text 'snacks'
+        // and for which the summary property contains the text 'snacks',
+        // which is unique to calendar items containing snack signup info
         if (
           (data.hasOwnProperty(k)) && 
           (data[k].summary) && 
           (data[k].summary.indexOf('snacks') >= 0)
         ) {
           // add new object to the snacks array, with summary
-          // and data properties
+          // and start (date) properties
           snacks.push({
             summary: data[k].summary,
             start: data[k].start
@@ -38,8 +39,11 @@ module.exports = function(robot) {
       // respond with each item in the sorted snacks array
       for (var k in snacks) {
         res.send(
+          // return only the first 10 characters, which make up the date
           snacks[k].start.toString().substr(0,10) + 
           ": " + 
+          // return characters 8 to the end of the string, excluding the
+          // unneeded text "snacks: " at the start of each entry
           snacks[k].summary.substr(8)
         );
       }  
