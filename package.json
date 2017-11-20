@@ -1,6 +1,6 @@
 {
   "name": "snackbot",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "author": "svodnik <sashavodnik@gmail.com>",
   "description": "Check the JSD9 snack schedule",
