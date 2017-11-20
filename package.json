@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "author": "svodnik <sashavodnik@gmail.com>",
-  "description": "Snack signup reminder",
+  "description": "Check the JSD9 snack schedule",
   "dependencies": {
     "hubot": "^2.19.0",
     "hubot-diagnostics": "0.0.2",
@@ -17,9 +17,10 @@
     "hubot-rules": "^0.1.2",
     "hubot-scripts": "^2.17.2",
     "hubot-shipit": "^0.2.1",
-    "hubot-slack": "^4.4.0"
+    "hubot-slack": "^4.4.0",
+    "ical": "^0.5.0"
   },
   "engines": {
-    "node": "6.9.x"
+    "node": "0.10.x"
   }
 }

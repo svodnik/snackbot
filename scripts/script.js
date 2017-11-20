@@ -1,33 +1,29 @@
-var jsDAVlib = require('./jsDAVlib/src/jsDAVlib.js').jsDAVlib;
-//require('./jsDAVlib/src/jsDAVXMLParser.js');
-//require('./jsDAVlib/src/jsDAVResource.js');
-//require('./jsDAVlib/src/jsDAVConnection.js');
-//require('./jsDAVlib/src/jsDAVCommunications.js');
+var ical = require('ical'),
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-console.log(jsDAVlib);
-
-var myDAVServer = jsDAVlib.getConnection({
-    url: 'webcal://p53-calendars.icloud.com/published/2/hu3E_dBzPi6QTRUEdjwaGVAc0X3Vvg-6uVUcUt9Mu07VJ3zuo5ZSy1-yuB640BpuQaSMMwvxfZw5zyvS42ytRcxG3lLgxXlMByMste1wPsQ',
-    user: '',
-    password: ''
-  });
-  
-  myDAVServer.onready = function() {
-    // Yeah! a correct DAV connection is DONE
-  
-    myDAVServer.getResource(null, function(resource, error) {
-      console.log('Root Resource: ' + JSON.stringify(resource.get()));
-  
-      var data = resource.get();
-  
-      // Recover first child element
-      if (data.meta.type.type === 'dir') {
-        myDAVServer.getResource(data.data[0].href, function(res, error) {
-          // Resource recovered . . .
-          if (data.meta.type.type === 'file' && data.meta.mime === 'text/x-vcard; charset=utf-8') {
-            // data.data contents is a VCARD file !
-          }
+module.exports = function(robot) {
+    robot.hear(/cal/, function(res) {
+        return ical.fromURL('http://p53-calendars.icloud.com/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8', {}, function(err, data) {
+            if (err) {
+                res.send("Encountered an error :( " + err);
+                return;
+            }
+            var snacks = [];
+            for (var k in data){
+              if ((data.hasOwnProperty(k)) && (data[k].summary) && (data[k].summary.indexOf('snacks') >= 0)) {
+                  snacks.push({
+                      summary: data[k].summary,
+                      start: data[k].start
+                  });
+              }
+            }
+            snacks.sort(function(a,b) {
+                return a.start - b.start;
+            });
+            for (var k in snacks) {
+                var ev = snacks[k];
+                res.send(ev.start.toString().substr(0,10) + ": " + ev.summary.substr(8));
+            }  
         });
-      }
     });
-  }
+};
