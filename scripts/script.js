@@ -1,5 +1,5 @@
-var ical = require('ical'),
-  months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+// incorporate ical npm module into this app
+var ical = require('ical');
 
 module.exports = function(robot) {
   // respond to the word "cal" in the current channel or DM
