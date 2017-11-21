@@ -13,11 +13,12 @@ module.exports = function(robot) {
   }];
   // create a function to return data from a single calendar entry
   function returnEvent(res, k) {
-    console.log(moment(snacks[k].start.substr(0,10)).format('MM-DD'));
+    // console.log(moment(snacks[k].start.substr(0,10)).format('MM-DD'));
     res.send(
       // return only the first 10 characters, which make up the date
-     '*' + snacks[k].start.toString().substr(0,10) + '*' + ' ' +
-      // '*' + 
+    //  '*' + snacks[k].start.toString().substr(0,10) + '*' + ' ' +
+     '*' + moment(snacks[k].start.substr(0,10)).format('ddd MMM DD') + '*' + ' ' +
+     // '*' + 
       // days[snacks[k].start.getDay()] +
       // ' ' +
       // months[snacks[k].start.getMonth()] + 
@@ -60,12 +61,10 @@ module.exports = function(robot) {
     snacks.sort(function(a,b) {
       return a.start - b.start;
     });
-    snacks.reverse();
     for (var el in snacks) {
       snacks[el].start = moment.tz(snacks[el].start, "America/Los_Angeles").format();
      // snacks[el].start = new Date(snacks[el].start);
     }
-    console.log(snacks);
   });
 
   // respond to the word "cal" in the current channel or DM
