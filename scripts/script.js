@@ -1,16 +1,16 @@
-/** Snackbot
- *  Slack access to the class snack schedule!
- *
- *  *@snackbot cal* returns a chronological list of all snack signups
- *  *@snackbot next* returns info on the next scheduled snack night
- **/
+// Snackbot
+//  Slack access to the class snack schedule!
+//
+//  *@snackbot cal* returns a chronological list of all snack signups
+//  *@snackbot next* returns info on the next scheduled snack night
+//  *@snackbot about* returns overview and list of commands
+
 
 // incorporate ical and moment npm modules into this app
 var ical = require('ical');
 var moment = require('moment-timezone');
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
 
 module.exports = function(robot) {
   // create a new snacks array to store selected calendar events
@@ -84,7 +84,7 @@ module.exports = function(robot) {
         message += returnEvent(res, k);
       }
     } 
-    res.send(message); 
+    res.send('Snack schedule:\n' + message); 
   });
 
   // respond to the word "next" in the current channel or DM
@@ -97,18 +97,19 @@ module.exports = function(robot) {
     // if today is not the last element in the array
     if (snacks.length > (today + 1)) {
       message += returnEvent(res, today + 1);
-      res.send(message);
+      res.send('Next snack night:\n' + message);
     // otherwise there is no signup after today, so let user know that
     } else {
-      res.send("No signups for upcoming classes. Want to step up? https://codesnacks.youcanbook.me/");
+      res.send('No signups for upcoming classes. Want to step up? https://codesnacks.youcanbook.me/');
     }  
   });
 
-  // respond to the word "help" with usage info
+  // respond to the word "about" with usage info
   robot.respond(/about/, function(res) {
     res.send('Slack access to the class snack schedule!\n' +
       '*@snackbot cal* returns a chronological list of all snack signups\n' +
-      '*@snackbot next* returns info on the next schedule snack night'
+      '*@snackbot next* returns info on the next schedule snack night\n' +
+      '*@snackbot about* returns overview and list of commands'
     );
   });
 };
