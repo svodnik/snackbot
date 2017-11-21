@@ -1,5 +1,6 @@
-// incorporate ical npm module into this app
+// incorporate ical and moment npm modules into this app
 var ical = require('ical');
+var moment = require('moment-timezone');
 
 module.exports = function(robot) {
   // create a new snacks array to store selected calendar events
@@ -11,8 +12,8 @@ module.exports = function(robot) {
   function returnEvent(res, k) {
     res.send(
       // return only the first 10 characters, which make up the date
-//      '*' + snacks[k].start.toString().substr(0,10) + '*' +
-      '*' + snacks[k].start + '*' +
+      '*' + snacks[k].start.toString().substr(0,10) + '*' +
+//      '*' + snacks[k].start + '*' +
       ": " + 
       // return characters 8 to the end of the string, excluding the
       // unneeded text "snacks: " at the start of each entry
@@ -51,10 +52,11 @@ module.exports = function(robot) {
       return a.start - b.start;
     });
     console.log(snacks);
-    // for (var el in snacks) {
-    //   snacks[el].start = snacks[el].start.toISOString().substr(0,23) + '-08:00';
-    // }
-    // console.log(snacks);
+    for (var el in snacks) {
+//      snacks[el].start = snacks[el].start.toISOString().substr(0,23) + '-08:00';
+      snacks[el].start = moment.tz(snacks[el].start, "America/Los_Angeles").format();
+    }
+    console.log(snacks);
   });
 
   // respond to the word "cal" in the current channel or DM
