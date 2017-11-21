@@ -13,6 +13,7 @@ module.exports = function(robot) {
   }];
   // create a function to return data from a single calendar entry
   function returnEvent(res, k) {
+    console.log(moment(snacks[k].start.substr(0,10)).format('MM-DD'));
     res.send(
       // return only the first 10 characters, which make up the date
      '*' + snacks[k].start.toString().substr(0,10) + '*' + ' ' +
