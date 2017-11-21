@@ -70,11 +70,10 @@ module.exports = function(robot) {
     });
     for (var el in snacks) {
       snacks[el].start = moment.tz(snacks[el].start, "America/Los_Angeles").format();
-     // snacks[el].start = new Date(snacks[el].start);
     }
   });
 
-  // respond to the word "cal" in the current channel or DM
+  // respond to the message "cal" in the current channel or DM
   robot.respond(/cal/, function(res) {
     // respond with each item in the sorted snacks array
     var message = '';
@@ -87,7 +86,7 @@ module.exports = function(robot) {
     res.send('Snack schedule:\n' + message); 
   });
 
-  // respond to the word "next" in the current channel or DM
+  // respond to the message "next" in the current channel or DM
   robot.respond(/next/, function(res) {
     var message = '';
     // get the array index for the element representing today
@@ -104,7 +103,7 @@ module.exports = function(robot) {
     }  
   });
 
-  // respond to the word "about" with usage info
+  // respond to the message "about" in the current channel or DM
   robot.respond(/about/, function(res) {
     res.send('Slack access to the class snack schedule!\n' +
       '*@snackbot cal* returns a chronological list of all snack signups\n' +
