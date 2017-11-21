@@ -60,13 +60,12 @@ module.exports = function(robot) {
     snacks.sort(function(a,b) {
       return a.start - b.start;
     });
-    console.log(snacks);
+    snacks.reverse();
     for (var el in snacks) {
       snacks[el].start = moment.tz(snacks[el].start, "America/Los_Angeles").format();
      // snacks[el].start = new Date(snacks[el].start);
     }
     console.log(snacks);
-    snacks.reverse();
   });
 
   // respond to the word "cal" in the current channel or DM
