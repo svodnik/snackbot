@@ -2,7 +2,7 @@
 var ical = require('ical');
 var moment = require('moment-timezone');
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',];
+var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 
 module.exports = function(robot) {
@@ -13,18 +13,21 @@ module.exports = function(robot) {
   }];
   // create a function to return data from a single calendar entry
   function returnEvent(res, k) {
-    res.send(
+    return(
       // begin bold formatting in Slack
       '*' + 
       // format with moment
-      // moment(snacks[k].start.substr(0,10)).format('ddd MMM DD') + 
+      // http://momentjs.com/docs/#/parsing/string-format/
+      // without substring, moment gets the time zone wrong and the date
+      // shifts forward one day
       moment(snacks[k].start.substr(0,10)).format('ddd MMM DD') +       
       // end bold formatting in slack
       '*' + 
       ' ' +
       // return characters 8 to the end of the string, excluding the
       // unneeded text "snacks: " at the start of each entry
-      snacks[k].summary.substr(8)
+      snacks[k].summary.substr(8) +
+      '\n'
     );
   }
   // use ical npm module to get calendar data from class calendar
@@ -67,23 +70,27 @@ module.exports = function(robot) {
   // respond to the word "cal" in the current channel or DM
   robot.hear(/cal/, function(res) {
     // respond with each item in the sorted snacks array
+    var message = '';
     for (var k in snacks) {
       // if the summary value of the current element is 'today', skip it
       if (snacks[k].summary !== 'today') {
-        returnEvent(res, k);
+        message += returnEvent(res, k);
       }
-    }  
+    } 
+    res.send(message); 
   });
 
   // respond to the word "next" in the current channel or DM
   robot.hear(/next/, function(res) {
+    var message = '';
     // get the array index for the element representing today
     var today = snacks.map(function(el) {
       return el.summary;
     }).indexOf('today');
     // if today is not the last element in the array
     if (snacks.length > (today + 1)) {
-      returnEvent(res, today + 1);
+      message += returnEvent(res, today + 1);
+      res.send(message);
     // otherwise there is no signup after today, so let user know that
     } else {
       res.send("No signups for upcoming classes. Want to step up? https://codesnacks.youcanbook.me/");
