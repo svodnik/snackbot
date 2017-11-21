@@ -107,7 +107,7 @@ module.exports = function(robot) {
   robot.respond(/about/, function(res) {
     res.send('Slack access to the class snack schedule!\n' +
       '*@snackbot cal* returns a chronological list of all snack signups\n' +
-      '*@snackbot next* returns info on the next schedule snack night\n' +
+      '*@snackbot next* returns info on the next scheduled snack night\n' +
       '*@snackbot about* returns overview and list of commands'
     );
   });
