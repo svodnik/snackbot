@@ -1,6 +1,9 @@
 // incorporate ical and moment npm modules into this app
 var ical = require('ical');
 var moment = require('moment-timezone');
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',];
+
 
 module.exports = function(robot) {
   // create a new snacks array to store selected calendar events
@@ -12,9 +15,13 @@ module.exports = function(robot) {
   function returnEvent(res, k) {
     res.send(
       // return only the first 10 characters, which make up the date
-      '*' + snacks[k].start.toString().substr(0,10) + '*' +
-//      '*' + snacks[k].start + '*' +
-      ": " + 
+      '*' + 
+      days[snacks[k].start.getDay()] +
+      ' ' +
+      months[snacks[k].start.getMonth()] + 
+      ' ' +
+      snacks[k].start.getDate() + 
+      "*: " + 
       // return characters 8 to the end of the string, excluding the
       // unneeded text "snacks: " at the start of each entry
       snacks[k].summary.substr(8)
@@ -53,8 +60,8 @@ module.exports = function(robot) {
     });
     console.log(snacks);
     for (var el in snacks) {
-//      snacks[el].start = snacks[el].start.toISOString().substr(0,23) + '-08:00';
       snacks[el].start = moment.tz(snacks[el].start, "America/Los_Angeles").format();
+      snacks[el].start = new Date(snacks[el].start);
     }
     console.log(snacks);
   });
