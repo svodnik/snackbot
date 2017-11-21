@@ -8,7 +8,7 @@
 
 // incorporate ical and moment npm modules into this app
 var ical = require('ical');
-var moment = require('moment-timezone');
+var moment = require('moment-timezone'); 
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 // caldav url to access
