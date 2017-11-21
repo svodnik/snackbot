@@ -2,7 +2,7 @@
 var ical = require('ical');
 var moment = require('moment-timezone');
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',];
 
 
 module.exports = function(robot) {
@@ -17,8 +17,8 @@ module.exports = function(robot) {
       // begin bold formatting in Slack
       '*' + 
       // format with moment
-      // http://momentjs.com/docs/#/parsing/string-format/
-      moment(snacks[k].start).format('ddd MMM DD') +       
+      // moment(snacks[k].start.substr(0,10)).format('ddd MMM DD') + 
+      moment(snacks[k].start.substr(0,10)).format('ddd MMM DD') +       
       // end bold formatting in slack
       '*' + 
       ' ' +
@@ -67,7 +67,6 @@ module.exports = function(robot) {
   // respond to the word "cal" in the current channel or DM
   robot.hear(/cal/, function(res) {
     // respond with each item in the sorted snacks array
-    var message = "";
     for (var k in snacks) {
       // if the summary value of the current element is 'today', skip it
       if (snacks[k].summary !== 'today') {
