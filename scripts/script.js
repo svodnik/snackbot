@@ -1,3 +1,10 @@
+/** Snackbot
+ *  Slack access to the class snack schedule!
+ *
+ *  *@snackbot cal* returns a chronological list of all snack signups
+ *  *@snackbot next* returns info on the next scheduled snack night
+ **/
+
 // incorporate ical and moment npm modules into this app
 var ical = require('ical');
 var moment = require('moment-timezone');
@@ -68,7 +75,7 @@ module.exports = function(robot) {
   });
 
   // respond to the word "cal" in the current channel or DM
-  robot.hear(/cal/, function(res) {
+  robot.respond(/cal/, function(res) {
     // respond with each item in the sorted snacks array
     var message = '';
     for (var k in snacks) {
@@ -81,7 +88,7 @@ module.exports = function(robot) {
   });
 
   // respond to the word "next" in the current channel or DM
-  robot.hear(/next/, function(res) {
+  robot.respond(/next/, function(res) {
     var message = '';
     // get the array index for the element representing today
     var today = snacks.map(function(el) {
@@ -95,5 +102,13 @@ module.exports = function(robot) {
     } else {
       res.send("No signups for upcoming classes. Want to step up? https://codesnacks.youcanbook.me/");
     }  
+  });
+
+  // respond to the word "help" with usage info
+  robot.respond(/about/, function(res) {
+    res.send('Slack access to the class snack schedule!\n' +
+      '*@snackbot cal* returns a chronological list of all snack signups\n' +
+      '*@snackbot next* returns info on the next schedule snack night'
+    );
   });
 };
