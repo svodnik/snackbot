@@ -15,7 +15,7 @@ module.exports = function(robot) {
   function returnEvent(res, k) {
     res.send(
       // return only the first 10 characters, which make up the date
-     '*' + snacks[k].start.toString().substr(0,10) + '*' +
+     '*' + snacks[k].start.toString().substr(0,10) + '*' + ' ' +
       // '*' + 
       // days[snacks[k].start.getDay()] +
       // ' ' +
@@ -62,7 +62,7 @@ module.exports = function(robot) {
     console.log(snacks);
     for (var el in snacks) {
       snacks[el].start = moment.tz(snacks[el].start, "America/Los_Angeles").format();
-      snacks[el].start = new Date(snacks[el].start);
+     // snacks[el].start = new Date(snacks[el].start);
     }
     console.log(snacks);
   });
