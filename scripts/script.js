@@ -11,6 +11,8 @@ var ical = require('ical');
 var moment = require('moment-timezone');
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+// caldav url to access
+var url = 'http://p53-calendars.icloud.com/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8';
 
 module.exports = function(robot) {
   // create a new snacks array to store selected calendar events
@@ -38,7 +40,7 @@ module.exports = function(robot) {
     );
   }
   // use ical npm module to get calendar data from class calendar
-  ical.fromURL('http://p53-calendars.icloud.com/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8', {}, function(err, data) {
+  ical.fromURL(url, {}, function(err, data) {
     // handle error
     if (err) {
       res.send("Encountered an error :( " + err);
