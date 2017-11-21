@@ -2,7 +2,7 @@
 var ical = require('ical');
 var moment = require('moment-timezone');
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',];
+var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 
 module.exports = function(robot) {
@@ -13,18 +13,15 @@ module.exports = function(robot) {
   }];
   // create a function to return data from a single calendar entry
   function returnEvent(res, k) {
-    // console.log(moment(snacks[k].start.substr(0,10)).format('MM-DD'));
     res.send(
-      // return only the first 10 characters, which make up the date
-    //  '*' + snacks[k].start.toString().substr(0,10) + '*' + ' ' +
-     '*' + moment(snacks[k].start.substr(0,10)).format('ddd MMM DD') + '*' + ' ' +
-     // '*' + 
-      // days[snacks[k].start.getDay()] +
-      // ' ' +
-      // months[snacks[k].start.getMonth()] + 
-      // ' ' +
-      // snacks[k].start.getDate() + 
-      // "*: " + 
+      // begin bold formatting in Slack
+      '*' + 
+      // format with moment
+      // http://momentjs.com/docs/#/parsing/string-format/
+      moment(snacks[k].start).format('ddd MMM DD') +       
+      // end bold formatting in slack
+      '*' + 
+      ' ' +
       // return characters 8 to the end of the string, excluding the
       // unneeded text "snacks: " at the start of each entry
       snacks[k].summary.substr(8)
