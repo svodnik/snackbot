@@ -66,6 +66,7 @@ module.exports = function(robot) {
      // snacks[el].start = new Date(snacks[el].start);
     }
     console.log(snacks);
+    snacks.reverse();
   });
 
   // respond to the word "cal" in the current channel or DM
