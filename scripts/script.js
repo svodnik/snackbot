@@ -168,9 +168,11 @@ module.exports = function(robot) {
         'BEGIN:VEVENT\r\n' +
         // 'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
         'UID:' + dateString + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
-        'DTEND:' + dateString + 'T023000Z\r\n' +
+        'DTSTART:' + start +
+        'DTEND:' + end +
+//        'DTSTART:' + dateString + 'T020000Z\r\n' +
+//        'DTEND:' + dateString + 'T023000Z\r\n' +
         'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
-        'DTSTART:' + dateString + 'T020000Z\r\n' +
         'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
         'END:VEVENT\r\n' +
         'END:VCALENDAR';
@@ -185,7 +187,7 @@ module.exports = function(robot) {
             res.send('I couldn\'t sign you up right now. Try again in a bit.');
           } else if (response) {
             if (body.toString().match('HTTP/1.1 200 OK')) {
-              res.send('You\'re signed up for snacks on ' + new Date(dateString).toLocaleDateString() + '!');
+              res.send('You\'re signed up for snacks on ' + new Date(start).toLocaleDateString() + '!');
             }
   //          res.send('Response: ' + response);
           }
