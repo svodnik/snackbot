@@ -143,10 +143,8 @@ module.exports = function(robot) {
       '*@snackbot cal* returns a chronological list of all snack signups\n' +
       '*@snackbot next* returns info on the next scheduled snack night\n' +
       '*@snackbot about* returns overview and list of commands' +
-      res.envelope.user.id + '\n' +
-      res.envelope.user.name + '\n' +
-      res.envelope.user.room + '\n' +
-      JSON.stringify(res.envelope)
+      res.envelope.user.profile.first_name + '\n' +
+      res.envelope.user.profile.display_name
     );
   });
 
