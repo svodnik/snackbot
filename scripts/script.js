@@ -149,51 +149,67 @@ module.exports = function(robot) {
   // respond to the message "signup" in the current channel or DM
   robot.respond(/signup (.*)/i, function(res) {
 // if "signup" is followed by a date (MM/DD), then do the signup
-    if (res.match[1].match(/\d\d\/\d\d/)) {
-      res.send('match!');
+    if (res.match[1].match(/\d{1,2}\W\d{1,2}/)) {
 // if "signup" is followed by "help" or by nothing or by something unparseable, 
 //   respond with info on how to construct a query -- specifically on how to 
 //   format the date
-      let month = res.match[1].substr(0,2);
-      let day = res.match[1].substr(3);
       let currentDate = new Date();
-      // let identifier = Math.random() * 10000;
-//      let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
-      let dateString = currentDate.getUTCFullYear().toString() + month + day;
-//      let start = dateString + 'T020000Z\r\n';
-      let start = dateString + 'T180000-0800\r\n';
-//      let end = dateString + 'T023000Z\r\n';
-      let end = dateString + 'T183000-0800\r\n';
+      // assume the user wants to sign up for a date this year
+      let year;
+      let month = res.match[1].substr(0,res.match[1].search(/\W/));
+      if (month.length === 1) {
+        month = '0' + month;
+      }
+      let day = res.match[1].substr(res.match[1].search(/\W/) + 1);
+      if (day.length === 1) {
+        day = '0' + day;
+      }
+      // if the provided month value is smaller than the current month,
+      // then assume the provided date should be next year
+      if ((currentDate.getMonth() + 1) > month) {
+        year = (currentDate.getFullYear() + 1).toString(); 
+      } else {
+        year = currentDate.getFullYear().toString();
+      }
+
+      let startDate = new Date (year, (month - 1), day);
+      let dateString = year.toString() + month + day;
+      let start = dateString + 'T180000\r\n';
+      let end = dateString + 'T183000\r\n';
       let data = 'BEGIN:VCALENDAR\r\n' + 
         'BEGIN:VEVENT\r\n' +
-        // 'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
         'UID:' + dateString + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
-        'DTSTART:' + start +
-        'DTEND:' + end +
-//        'DTSTART:' + dateString + 'T020000Z\r\n' +
-//        'DTEND:' + dateString + 'T023000Z\r\n' +
-        'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
-        'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
+        'DTSTART;TZID=America/Los_Angeles:' + start +
+        'DTEND;TZID=America/Los_Angeles:' + end +
+        // 'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
+        // 'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
+        'SUMMARY:snacks: Sasha\r\n' +
+        'DESCRIPTION:##sasha##\r\n' +
         'END:VEVENT\r\n' +
         'END:VCALENDAR';
         
   // TODO: move url, login, pw, and path to process.env (on Heroku)
+        // process.env.CALENDAR_URL: iCloud calendar URL
+        // NOTE: https required
         robot.http('https://p53-caldav.icloud.com')
         .header('Content-Type', 'text/calendar; charset=utf-8')
+        // process.env.CALENDAR_ACCOUNT: iCloud username
+        // process.env.CALENDAR_PW: iCloud application password
         .auth('quietquake@mac.com', 'qvgd-hfsw-jaui-nprp')
+        // process.env.CALENDAR_PATH: iCloud CalDAV path for calendar,
+        // consisting of USER_ID/calendar/CALENDAR_ID
+        // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
         .path('/173389758/calendars/B08F871B-5E59-43F3-A7C0-C6272D7C7C22/')
         .post(data)(function(err, response, body) {
           if (err) {
             res.send('I couldn\'t sign you up right now. Try again in a bit.');
           } else if (response) {
             if (body.toString().match('HTTP/1.1 200 OK')) {
-              res.send('You\'re signed up for snacks on ' + new Date(start).toLocaleDateString() + '!');
+              res.send('You\'re signed up for snacks on ' + new Date(startDate).toLocaleDateString() + '!');
+            } else {
+              res.send(body)
             }
-  //          res.send('Response: ' + response);
           }
-          // if (body) {
-          //   res.send('Body: ' + body);
-          // }
         });
       }
   });
