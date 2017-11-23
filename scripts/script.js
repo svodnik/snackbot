@@ -160,7 +160,11 @@ module.exports = function(robot) {
       // let identifier = Math.random() * 10000;
 //      let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
       let dateString = currentDate.getUTCFullYear().toString() + month + day;
-      let data = 'BEGIN:VCALENDAR\r\n' +
+//      let start = dateString + 'T020000Z\r\n';
+      let start = dateString + 'T180000-0800\r\n';
+//      let end = dateString + 'T023000Z\r\n';
+      let end = dateString + 'T183000-0800\r\n';
+      let data = 'BEGIN:VCALENDAR\r\n' + 
         'BEGIN:VEVENT\r\n' +
         // 'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
         'UID:' + dateString + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
