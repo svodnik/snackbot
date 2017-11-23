@@ -56,15 +56,15 @@ module.exports = function(robot) {
     robot.http('p53-calendars.icloud.com')
       .header('Content-Type', 'text/calendar; charset=utf-8')
       .path('/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8')
-      .post(data) (function(err, res, body) {
+      .post(data) (function(err, response, body) {
         if (err) {
-          return err;
+          res.send(err);
         }
-        if (res) {
-          return res;
+        if (ressponse) {
+          res.send(response);
         }
         if (body) {
-          return body;
+          res.send(body);
         }
       });
       // getting an error
@@ -148,7 +148,7 @@ module.exports = function(robot) {
 
   // respond to the message "signup" in the current channel or DM
   robot.respond(/signup/, function(res) {
-    res.send(addSignup(new Date(),'Sasha',sasha));
+    addSignup(new Date(),'Sasha',sasha);
   });
 
 };
