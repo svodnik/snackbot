@@ -160,6 +160,7 @@ module.exports = function(robot) {
 // then create a separate respond for deleting an existing signup, which will
 //   need to match the username with the username in the memo of the event to
 //   cancel
+// then create reminder functionality
 
 // res.envelope.user.profile.first_name
 // res.envelope.user.profile.display_name
@@ -188,7 +189,7 @@ module.exports = function(robot) {
           res.send('I couldn\'t sign you up right now. Try again in a bit.');
         } else if (response) {
           if (body.toString().match('HTTP/1.1 200 OK')) {
-            res.send('You\'re all signed up!');
+            res.send('You\'re signed up for snacks on ' + date.toLocaleDateString() + '!');
           }
 //          res.send('Response: ' + response);
         }
