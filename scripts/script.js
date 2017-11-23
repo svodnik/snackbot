@@ -5,6 +5,7 @@
 //  *@snackbot next* returns info on the next scheduled snack night
 //  *@snackbot about* returns overview and list of commands
 
+"use strict";
 
 // incorporate ical and moment npm modules into this app
 var ical = require('ical');
@@ -38,6 +39,42 @@ module.exports = function(robot) {
       '\n'
     );
   }
+
+  function addSignup(date,fname,handle) {
+    let identifier = Math.random() * 10000;
+    let handle = 'sasha';
+    let fname = 'Sasha';
+    let date = new Date();
+    let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
+    let data = 'BEGIN:VCALENDAR\r\n' +
+      'BEGIN:VEVENT\r\n' +
+      'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
+      'DTEND:' + dateString + 'T023000Z\r\n' +
+      'SUMMARY:snacks: ' + fname + '\r\n' +
+      'DTSTART:' + dateString + 'T020000Z\r\n' +
+      'DESCRIPTION:##' + handle + '##\r\n' +
+      'END:VEVENT\r\n' +
+      'END:VCALENDAR';
+
+    robot.http('p53-calendars.icloud.com')
+      .header('Content-Type', 'text/calendar; charset=utf-8')
+      .path('/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8')
+      .post(data) (function(err, res, body) {
+        if (err) {
+          return err;
+        }
+        if (res) {
+          return res;
+        }
+        if (body) {
+          return body;
+        }
+      });
+      // getting an error
+      // next step: specify dependencies:
+      // https://stackoverflow.com/questions/15274035/add-post-support-to-hubot#28716542
+  }
+
   // use ical npm module to get calendar data from class calendar
   ical.fromURL(url, {}, function(err, data) {
     // handle error
@@ -45,7 +82,6 @@ module.exports = function(robot) {
       res.send("Encountered an error :( " + err);
       return;
     }
-
     // loop through returned calendar objects
     for (var k in data){
       // identify calendar objects that are actual data,
@@ -112,4 +148,10 @@ module.exports = function(robot) {
       '*@snackbot about* returns overview and list of commands'
     );
   });
+
+  // respond to the message "signup" in the current channel or DM
+  robot.respond(/signup/, function(res) {
+    res.send(addSignup(new Date(),'Sasha',sasha));
+  });
+
 };
