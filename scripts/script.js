@@ -42,9 +42,6 @@ module.exports = function(robot) {
 
   function addSignup(date,fname,handle) {
     let identifier = Math.random() * 10000;
-    let handle = 'sasha';
-    let fname = 'Sasha';
-    let date = new Date();
     let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
     let data = 'BEGIN:VCALENDAR\r\n' +
       'BEGIN:VEVENT\r\n' +
