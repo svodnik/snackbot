@@ -150,6 +150,7 @@ module.exports = function(robot) {
   robot.respond(/signup (.*)/i, function(res) {
 // if "signup" is followed by a date (MM/DD), then do the signup
     if (res.match[1].match(/\d\d\/\d\d/)) {
+      res.send('match!');
 // if "signup" is followed by "help" or by nothing or by something unparseable, 
 //   respond with info on how to construct a query -- specifically on how to 
 //   format the date
@@ -158,11 +159,11 @@ module.exports = function(robot) {
       let currentDate = new Date();
       // let identifier = Math.random() * 10000;
 //      let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
-      let dateString = date.getUTCFullYear().toString() + month + day;
+      let dateString = currentDate.getUTCFullYear().toString() + month + day;
       let data = 'BEGIN:VCALENDAR\r\n' +
         'BEGIN:VEVENT\r\n' +
         // 'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
-        'UID:' + datestring + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
+        'UID:' + dateString + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
         'DTEND:' + dateString + 'T023000Z\r\n' +
         'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
         'DTSTART:' + dateString + 'T020000Z\r\n' +
