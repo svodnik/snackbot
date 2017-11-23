@@ -147,20 +147,19 @@ module.exports = function(robot) {
   });
 
   // respond to the message "signup" in the current channel or DM
-  robot.respond(/signup (.*)/i, function(res) {
-// if "signup" is followed by a date (MM/DD), then do the signup
-    if (res.match[1].match(/\d{1,2}\W\d{1,2}/)) {
-// if "signup" is followed by "help" or by nothing or by something unparseable, 
-//   respond with info on how to construct a query -- specifically on how to 
-//   format the date
+  robot.respond(/signup(.*)/i, function(res) {
+    let request = (res.match[1]).trim();
+    // if "signup" is followed by 1 or 2 numbers, a separator, and 1 or 2
+    // numbers, then do the signup
+    if (request && (request.match(/\d{1,2}\W\d{1,2}/))) {
       let currentDate = new Date();
       // assume the user wants to sign up for a date this year
       let year;
-      let month = res.match[1].substr(0,res.match[1].search(/\W/));
+      let month = request.substr(0, request.search(/\W/));
       if (month.length === 1) {
         month = '0' + month;
       }
-      let day = res.match[1].substr(res.match[1].search(/\W/) + 1);
+      let day = request.substr(request.search(/\W/) + 1);
       if (day.length === 1) {
         day = '0' + day;
       }
@@ -183,12 +182,13 @@ module.exports = function(robot) {
         'DTEND;TZID=America/Los_Angeles:' + end +
         // 'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
         // 'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
+        // for local testing, as envelope info is limited in CLI
         'SUMMARY:snacks: Sasha\r\n' +
         'DESCRIPTION:##sasha##\r\n' +
         'END:VEVENT\r\n' +
         'END:VCALENDAR';
         
-  // TODO: move url, login, pw, and path to process.env (on Heroku)
+  // TODO: replace literal url, login, pw, and path with process.env references
         // process.env.CALENDAR_URL: iCloud calendar URL
         // NOTE: https required
         robot.http('https://p53-caldav.icloud.com')
@@ -211,6 +211,15 @@ module.exports = function(robot) {
             }
           }
         });
+      // if data provided after 'signup' keyword doesn't include or doesn'tmatch
+      // date format
+      } else {
+        res.send('To sign up for a snack night, use the following syntax:\n' +
+          '`@snackbot signup MM/DD`\n' +
+          'where `MM` is a month value and `DD` is a day value\n' +
+          'like `@snackbot signup 11/30`\n' +
+          'Or use `@snackbot about` for additional commands.'
+        )
       }
   });
 
