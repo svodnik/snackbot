@@ -169,7 +169,7 @@ module.exports = function(robot) {
       .path('/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8')
       .post(data)(function(err, response, body) {
         if (err) {
-          res.send(err);
+          res.send('Err: ');
         }
         if (response) {
           res.send('Response: ');
