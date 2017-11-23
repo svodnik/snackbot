@@ -142,13 +142,27 @@ module.exports = function(robot) {
     res.send('Slack access to the class snack schedule!\n' +
       '*@snackbot cal* returns a chronological list of all snack signups\n' +
       '*@snackbot next* returns info on the next scheduled snack night\n' +
-      '*@snackbot about* returns overview and list of commands'
+      '*@snackbot about* returns overview and list of commands' +
+      res.envelope.user.id + '\n' +
+      res.envelope.user.name + '\n' +
+      res.envelope.user.room + '\n'
     );
   });
 
   // respond to the message "signup" in the current channel or DM
   robot.respond(/signup/, function(res) {
-//    res.send(addSignup(new Date(),'Sasha','sasha'));
+// capture additional input besides the word "signup"
+// if "signup" is followed by "help" or by nothing, respond with info on how to
+//   construct a query -- specifically on how to format the date
+// also look for a valid date, supporting a few different formats:
+//   January 13
+//   Jan 13
+//   Jan. 13
+//   1/13
+//   maybe also 13/1, though this introduces ambiguity
+// then create a separate respond for deleting an existing signup, which will
+//   need to match the username with the username in the memo of the event to
+//   cancel
     let date = new Date();
     let fname = 'Sasha';
     let handle = 'sasha';
@@ -160,27 +174,34 @@ module.exports = function(robot) {
       'DTEND:' + dateString + 'T023000Z\r\n' +
       'SUMMARY:snacks: ' + fname + '\r\n' +
       'DTSTART:' + dateString + 'T020000Z\r\n' +
-      'DESCRIPTION:##' + handle + '##\r\n' +
+      'DESCRIPTION:##' + res.envelope.user.name + '##\r\n' +
       'END:VEVENT\r\n' +
       'END:VCALENDAR';
       
-    robot.http('p53-calendars.icloud.com')
+// TODO: move url, login, pw, and path to process.env (on Heroku)
+      robot.http('https://p53-caldav.icloud.com')
       .header('Content-Type', 'text/calendar; charset=utf-8')
-      .path('/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8')
+      .auth('quietquake@mac.com', 'qvgd-hfsw-jaui-nprp')
+      .path('/173389758/calendars/B08F871B-5E59-43F3-A7C0-C6272D7C7C22/')
       .post(data)(function(err, response, body) {
         if (err) {
-          res.send('Err: ' + err);
+          res.send('I couldn\'t sign you up right now. Try again in a bit.');
+        } else if (response) {
+          if (body.toString().match('HTTP/1.1 200 OK')) {
+            res.send('You\'re all signed up!');
+          }
+//          res.send('Response: ' + response);
         }
-        if (response) {
-          res.send('Response: ');
-        }
-        if (body) {
-          res.send('Body: ');
-        }
+        // if (body) {
+        //   res.send('Body: ' + body);
+        // }
       });
-      // getting an error
-      // next step: specify dependencies:
-      // https://stackoverflow.com/questions/15274035/add-post-support-to-hubot#28716542
+      // next step: set up authentication with an app-specific password
+      // get password from apple
+      // look at hubot http documentation to figure out where to put it (it's documented)
+      // make sure you can log in
+      // then save auth info on Heroku
+
   });
 
 };
