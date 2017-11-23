@@ -41,7 +41,6 @@ module.exports = function(robot) {
   }
 
   function addSignup(date,fname,handle) {
-    res.send("Signup request initiated");
     let identifier = Math.random() * 10000;
     let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
     let data = 'BEGIN:VCALENDAR\r\n' +
@@ -53,19 +52,19 @@ module.exports = function(robot) {
       'DESCRIPTION:##' + handle + '##\r\n' +
       'END:VEVENT\r\n' +
       'END:VCALENDAR';
-
+      
     robot.http('p53-calendars.icloud.com')
       .header('Content-Type', 'text/calendar; charset=utf-8')
       .path('/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8')
-      .post(data) (function(err, response, body) {
+      .post(data)(function(err, response, body) {
         if (err) {
-          res.send(err);
+          res.send('Err: ');
         }
-        if (ressponse) {
-          res.send(response);
+        if (response) {
+          res.send('Response: ');
         }
         if (body) {
-          res.send(body);
+          res.send('Body: ');
         }
       });
       // getting an error
@@ -149,7 +148,39 @@ module.exports = function(robot) {
 
   // respond to the message "signup" in the current channel or DM
   robot.respond(/signup/, function(res) {
-    addSignup(new Date(),'Sasha',sasha);
+//    res.send(addSignup(new Date(),'Sasha','sasha'));
+    let date = new Date();
+    let fname = 'Sasha';
+    let handle = 'sasha';
+    let identifier = Math.random() * 10000;
+    let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
+    let data = 'BEGIN:VCALENDAR\r\n' +
+      'BEGIN:VEVENT\r\n' +
+      'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
+      'DTEND:' + dateString + 'T023000Z\r\n' +
+      'SUMMARY:snacks: ' + fname + '\r\n' +
+      'DTSTART:' + dateString + 'T020000Z\r\n' +
+      'DESCRIPTION:##' + handle + '##\r\n' +
+      'END:VEVENT\r\n' +
+      'END:VCALENDAR';
+      
+    robot.http('p53-calendars.icloud.com')
+      .header('Content-Type', 'text/calendar; charset=utf-8')
+      .path('/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8')
+      .post(data)(function(err, response, body) {
+        if (err) {
+          res.send(err);
+        }
+        if (response) {
+          res.send('Response: ');
+        }
+        if (body) {
+          res.send('Body: ');
+        }
+      });
+      // getting an error
+      // next step: specify dependencies:
+      // https://stackoverflow.com/questions/15274035/add-post-support-to-hubot#28716542
   });
 
 };
