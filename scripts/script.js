@@ -145,7 +145,8 @@ module.exports = function(robot) {
       '*@snackbot about* returns overview and list of commands' +
       res.envelope.user.id + '\n' +
       res.envelope.user.name + '\n' +
-      res.envelope.user.room + '\n'
+      res.envelope.user.room + '\n' +
+      JSON.stringify(res.envelope)
     );
   });
 
