@@ -108,7 +108,7 @@ module.exports = function(robot) {
   });
 
   // respond to the message "cal" in the current channel or DM
-  robot.respond(/cal/, function(res) {
+  robot.respond(/cal/i, function(res) {
     // respond with each item in the sorted snacks array
     var message = '';
     for (var k in snacks) {
@@ -121,7 +121,7 @@ module.exports = function(robot) {
   });
 
   // respond to the message "next" in the current channel or DM
-  robot.respond(/next/, function(res) {
+  robot.respond(/next/i, function(res) {
     var message = '';
     // get the array index for the element representing today
     var today = snacks.map(function(el) {
@@ -138,7 +138,7 @@ module.exports = function(robot) {
   });
 
   // respond to the message "about" in the current channel or DM
-  robot.respond(/about/, function(res) {
+  robot.respond(/about/i, function(res) {
     res.send('Slack access to the class snack schedule!\n' +
       '*@snackbot cal* returns a chronological list of all snack signups\n' +
       '*@snackbot next* returns info on the next scheduled snack night\n' +
@@ -147,62 +147,53 @@ module.exports = function(robot) {
   });
 
   // respond to the message "signup" in the current channel or DM
-  robot.respond(/signup/, function(res) {
-// capture additional input besides the word "signup"
-// if "signup" is followed by "help" or by nothing, respond with info on how to
-//   construct a query -- specifically on how to format the date
-// also look for a valid date, supporting a few different formats:
-//   January 13
-//   Jan 13
-//   Jan. 13
-//   1/13
-//   maybe also 13/1, though this introduces ambiguity
-// then create a separate respond for deleting an existing signup, which will
-//   need to match the username with the username in the memo of the event to
-//   cancel
-// then create reminder functionality
-
-// res.envelope.user.profile.first_name
-// res.envelope.user.profile.display_name
-
-    let date = new Date();
-    // let identifier = Math.random() * 10000;
-    let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
-    let data = 'BEGIN:VCALENDAR\r\n' +
-      'BEGIN:VEVENT\r\n' +
-      // 'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
-      'UID:' + date.valueOf() + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
-      'DTEND:' + dateString + 'T023000Z\r\n' +
-      'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
-      'DTSTART:' + dateString + 'T020000Z\r\n' +
-      'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
-      'END:VEVENT\r\n' +
-      'END:VCALENDAR';
-      
-// TODO: move url, login, pw, and path to process.env (on Heroku)
-      robot.http('https://p53-caldav.icloud.com')
-      .header('Content-Type', 'text/calendar; charset=utf-8')
-      .auth('quietquake@mac.com', 'qvgd-hfsw-jaui-nprp')
-      .path('/173389758/calendars/B08F871B-5E59-43F3-A7C0-C6272D7C7C22/')
-      .post(data)(function(err, response, body) {
-        if (err) {
-          res.send('I couldn\'t sign you up right now. Try again in a bit.');
-        } else if (response) {
-          if (body.toString().match('HTTP/1.1 200 OK')) {
-            res.send('You\'re signed up for snacks on ' + date.toDateString() + '!');
+  robot.respond(/signup (.*)/i, function(res) {
+// if "signup" is followed by a date (MM/DD), then do the signup
+    if (res.match[1].match('\d\d/\d\d')) {
+// if "signup" is followed by "help" or by nothing or by something unparseable, 
+//   respond with info on how to construct a query -- specifically on how to 
+//   format the date
+      let month = res.match[1].substr(0,2);
+      let day = res.match[1].substr(3);
+      let currentDate = new Date();
+      // let identifier = Math.random() * 10000;
+//      let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
+      let dateString = date.getUTCFullYear().toString() + month + day;
+      let data = 'BEGIN:VCALENDAR\r\n' +
+        'BEGIN:VEVENT\r\n' +
+        // 'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
+        'UID:' + datestring + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
+        'DTEND:' + dateString + 'T023000Z\r\n' +
+        'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
+        'DTSTART:' + dateString + 'T020000Z\r\n' +
+        'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
+        'END:VEVENT\r\n' +
+        'END:VCALENDAR';
+        
+  // TODO: move url, login, pw, and path to process.env (on Heroku)
+        robot.http('https://p53-caldav.icloud.com')
+        .header('Content-Type', 'text/calendar; charset=utf-8')
+        .auth('quietquake@mac.com', 'qvgd-hfsw-jaui-nprp')
+        .path('/173389758/calendars/B08F871B-5E59-43F3-A7C0-C6272D7C7C22/')
+        .post(data)(function(err, response, body) {
+          if (err) {
+            res.send('I couldn\'t sign you up right now. Try again in a bit.');
+          } else if (response) {
+            if (body.toString().match('HTTP/1.1 200 OK')) {
+              res.send('You\'re signed up for snacks on ' + new Date(dateString).toLocaleDateString() + '!');
+            }
+  //          res.send('Response: ' + response);
           }
-//          res.send('Response: ' + response);
-        }
-        // if (body) {
-        //   res.send('Body: ' + body);
-        // }
-      });
-      // next step: set up authentication with an app-specific password
-      // get password from apple
-      // look at hubot http documentation to figure out where to put it (it's documented)
-      // make sure you can log in
-      // then save auth info on Heroku
-
+          // if (body) {
+          //   res.send('Body: ' + body);
+          // }
+        });
+      }
   });
 
+// then create a separate response for deleting an existing signup, which will
+//   need to match the username with the username in the memo of the event to
+//   cancel
+
+// then create reminder functionality
 };
