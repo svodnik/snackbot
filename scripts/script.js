@@ -41,6 +41,7 @@ module.exports = function(robot) {
   }
 
   function addSignup(date,fname,handle) {
+    res.send("Signup request initiated");
     let identifier = Math.random() * 10000;
     let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
     let data = 'BEGIN:VCALENDAR\r\n' +
