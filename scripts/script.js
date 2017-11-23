@@ -149,7 +149,7 @@ module.exports = function(robot) {
   // respond to the message "signup" in the current channel or DM
   robot.respond(/signup (.*)/i, function(res) {
 // if "signup" is followed by a date (MM/DD), then do the signup
-    if (res.match[1].match('\d\d/\d\d')) {
+    if (res.match[1].match(/\d\d\/\d\d/)) {
 // if "signup" is followed by "help" or by nothing or by something unparseable, 
 //   respond with info on how to construct a query -- specifically on how to 
 //   format the date
