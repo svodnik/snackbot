@@ -142,9 +142,7 @@ module.exports = function(robot) {
     res.send('Slack access to the class snack schedule!\n' +
       '*@snackbot cal* returns a chronological list of all snack signups\n' +
       '*@snackbot next* returns info on the next scheduled snack night\n' +
-      '*@snackbot about* returns overview and list of commands' +
-      res.envelope.user.profile.first_name + '\n' +
-      res.envelope.user.profile.display_name
+      '*@snackbot about* returns overview and list of commands'
     );
   });
 
@@ -162,18 +160,21 @@ module.exports = function(robot) {
 // then create a separate respond for deleting an existing signup, which will
 //   need to match the username with the username in the memo of the event to
 //   cancel
+
+// res.envelope.user.profile.first_name
+// res.envelope.user.profile.display_name
+
     let date = new Date();
-    let fname = 'Sasha';
-    let handle = 'sasha';
-    let identifier = Math.random() * 10000;
+    // let identifier = Math.random() * 10000;
     let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
     let data = 'BEGIN:VCALENDAR\r\n' +
       'BEGIN:VEVENT\r\n' +
-      'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
+      // 'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
+      'UID:' + date.valueOf() + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
       'DTEND:' + dateString + 'T023000Z\r\n' +
-      'SUMMARY:snacks: ' + fname + '\r\n' +
+      'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
       'DTSTART:' + dateString + 'T020000Z\r\n' +
-      'DESCRIPTION:##' + res.envelope.user.name + '##\r\n' +
+      'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
       'END:VEVENT\r\n' +
       'END:VCALENDAR';
       
