@@ -189,7 +189,7 @@ module.exports = function(robot) {
           res.send('I couldn\'t sign you up right now. Try again in a bit.');
         } else if (response) {
           if (body.toString().match('HTTP/1.1 200 OK')) {
-            res.send('You\'re signed up for snacks on ' + date.toLocaleDateString() + '!');
+            res.send('You\'re signed up for snacks on ' + date.toDateString() + '!');
           }
 //          res.send('Response: ' + response);
         }
