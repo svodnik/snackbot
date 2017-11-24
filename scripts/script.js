@@ -140,6 +140,7 @@ module.exports = function(robot) {
   // respond to the message "about" in the current channel or DM
   robot.respond(/about/i, function(res) {
     res.send('Slack access to the class snack schedule!\n' +
+      '*@snackbot signup MM-DD* signs you up to bring snacks\n' +
       '*@snackbot cal* returns a chronological list of all snack signups\n' +
       '*@snackbot next* returns info on the next scheduled snack night\n' +
       '*@snackbot about* returns overview and list of commands'
@@ -149,37 +150,48 @@ module.exports = function(robot) {
   // respond to the message "signup" in the current channel or DM
   robot.respond(/signup(.*)/i, function(res) {
     let request = (res.match[1]).trim();
-    // if "signup" is followed by 1 or 2 numbers, a separator, and 1 or 2
-    // numbers, then do the signup
+    let currentDate = new Date();
+    let year;
+    let month;
+    let day;
+
+    // if the request contains a date, substring it into 2-digit month and
+    // 2-digit day
     if (request && (request.match(/\d{1,2}\W\d{1,2}/))) {
-      let currentDate = new Date();
       // assume the user wants to sign up for a date this year
-      let year;
-      let month = request.substr(0, request.search(/\W/));
+      month = request.substr(0, request.search(/\W/));
       if (month.length === 1) {
         month = '0' + month;
       }
-      let day = request.substr(request.search(/\W/) + 1);
+      day = request.substr(request.search(/\W/) + 1);
       if (day.length === 1) {
         day = '0' + day;
       }
-      // if the provided month value is smaller than the current month,
-      // then assume the provided date should be next year
-      if ((currentDate.getMonth() + 1) > month) {
-        year = (currentDate.getFullYear() + 1).toString(); 
-      } else {
-        year = currentDate.getFullYear().toString();
-      }
+    }
 
-      let startDate = new Date (year, (month - 1), day);
-      let dateString = year.toString() + month + day;
-      let start = dateString + 'T180000\r\n';
-      let end = dateString + 'T183000\r\n';
+    // if the current month is greater than the provided month value,
+    // then assume the provided date should be next year
+    if ((currentDate.getMonth() + 1) > month) {
+      year = (currentDate.getFullYear() + 1).toString(); 
+    // otherwise, assume the current year
+    } else {
+      year = currentDate.getFullYear().toString();
+    }
+
+    let startDate = new Date (year, (month - 1), day);
+    let dateString = year.toString() + month + day;
+    let start = dateString + 'T180000\r\n';
+    let end = dateString + 'T183000\r\n';
+
+    // if "signup" is immediately followed by 1 or 2 numbers, a separator, 
+    // and 1 or 2 numbers, then do the signup
+    if (request && (request.match(/^\d{1,2}\W\d{1,2}/))) {
       let data = 'BEGIN:VCALENDAR\r\n' + 
         'BEGIN:VEVENT\r\n' +
         'UID:' + dateString + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
         'DTSTART;TZID=America/Los_Angeles:' + start +
         'DTEND;TZID=America/Los_Angeles:' + end +
+// Swap out for res.envelope when deploying
         // 'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
         // 'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
         // for local testing, as envelope info is limited in CLI
@@ -188,41 +200,104 @@ module.exports = function(robot) {
         'END:VEVENT\r\n' +
         'END:VCALENDAR';
         
-  // TODO: replace literal url, login, pw, and path with process.env references
-        // process.env.CALENDAR_URL: iCloud calendar URL
-        // NOTE: https required
-        robot.http('https://p53-caldav.icloud.com')
-        .header('Content-Type', 'text/calendar; charset=utf-8')
-        // process.env.CALENDAR_ACCOUNT: iCloud username
-        // process.env.CALENDAR_PW: iCloud application password
-        .auth('quietquake@mac.com', 'qvgd-hfsw-jaui-nprp')
-        // process.env.CALENDAR_PATH: iCloud CalDAV path for calendar,
-        // consisting of USER_ID/calendar/CALENDAR_ID
-        // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
-        .path('/173389758/calendars/B08F871B-5E59-43F3-A7C0-C6272D7C7C22/')
-        .post(data)(function(err, response, body) {
-          if (err) {
-            res.send('I couldn\'t sign you up right now. Try again in a bit.');
-          } else if (response) {
-            if (body.toString().match('HTTP/1.1 200 OK')) {
-              res.send('You\'re signed up for snacks on ' + new Date(startDate).toLocaleDateString() + '!');
-            } else {
-              res.send(body)
-            }
+      // process.env.CALENDAR_URL: iCloud calendar URL
+      robot.http(process.env.CALENDAR_URL)
+      .header('Content-Type', 'text/calendar; charset=utf-8')
+      // process.env.CALENDAR_ACCOUNT: iCloud username
+      // process.env.CALENDAR_PW: iCloud application password
+      .auth(process.env.CALENDAR_ACCOUNT, process.env.CALENDAR_PW)
+      // process.env.CALENDAR_PATH: iCloud CalDAV path for calendar,
+      // consisting of USER_ID/calendar/CALENDAR_ID
+      // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
+      .path(process.env.CALENDAR_PATH)
+      .post(data)(function(err, response, body) {
+        if (err) {
+          res.send('I couldn\'t sign you up right now. Try again in a bit.');
+        } else if (response) {
+          if (body.toString().match('HTTP/1.1 200 OK')) {
+            res.send('You\'re signed up for snacks on ' + new Date(startDate).toLocaleDateString() + '!');
+          } else {
+            res.send(body)
           }
-        });
-      // if data provided after 'signup' keyword doesn't include or doesn'tmatch
-      // date format
-      } else {
-        res.send('To sign up for a snack night, use the following syntax:\n' +
-          '`@snackbot signup MM/DD`\n' +
-          'where `MM` is a month value and `DD` is a day value\n' +
-          'like `@snackbot signup 11/30`\n' +
-          'Or use `@snackbot about` for additional commands.'
-        )
-      }
-  });
+        }
+      });
 
+      // if data provided after 'signup' keyword doesn't include or doesn't match
+      // date format
+    } else {
+      res.send('To sign up for a snack night, use the following syntax:\n' +
+        '`@snackbot signup MM/DD`\n' +
+        'where `MM` is a month value and `DD` is a day value\n' +
+        'like `@snackbot signup 11/30`\n' +
+        'Or use `@snackbot about` for additional commands.'
+      )
+    }
+  });
+/*
+  robot.respond(/cancel(.*)/i, function(res) {
+    let request = (res.match[1]).trim();
+    let currentDate = new Date();
+    let year;
+    let month;
+    let day;
+    if (request && request.match(/\d{1,2}\W\d{1,2}/)) {
+      month = request.substr(0, request.search(/\W/));
+      if (month.length === 1) {
+        month = '0' + month;
+      }
+      day = request.substr(request.search(/\W/) + 1);
+      if (day.length === 1) {
+        day = '0' + day;
+      }
+    }
+
+    // if the current month is greater than the provided month value,
+    // then assume the provided date should be next year
+    if ((currentDate.getMonth() + 1) > month) {
+      year = (currentDate.getFullYear() + 1).toString(); 
+    // otherwise, assume the current year
+    } else {
+      year = currentDate.getFullYear().toString();
+    }
+
+    let startDate = new Date (year, (month - 1), day);
+    let dateString = year.toString() + month + day;
+    let start = dateString + 'T180000\r\n';
+    let end = dateString + 'T183000\r\n';
+
+    let data = 'BEGIN:VCALENDAR\r\n' + 
+      'BEGIN:VEVENT\r\n' +
+      'UID:' + dateString + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
+      'DTSTART;TZID=America/Los_Angeles:' + start +
+      'DTEND;TZID=America/Los_Angeles:' + end +
+      'END:VEVENT\r\n' +
+      'END:VCALENDAR';
+
+    console.log(data);
+
+    // process.env.CALENDAR_URL: iCloud calendar URL
+    robot.http(process.env.CALENDAR_URL)
+    .header('Content-Type', 'text/calendar; charset=utf-8')
+    // process.env.CALENDAR_ACCOUNT: iCloud username
+    // process.env.CALENDAR_PW: iCloud application password
+    .auth(process.env.CALENDAR_ACCOUNT, process.env.CALENDAR_PW)
+    // process.env.CALENDAR_PATH: iCloud CalDAV path for calendar,
+    // consisting of USER_ID/calendar/CALENDAR_ID
+    // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
+    .path(process.env.CALENDAR_PATH)
+    // .delete(data)(function(err, response, body) {
+    //   if (err) {
+    //     res.send('I couldn\'t cancel your signup right now. Try again in a bit.');
+    //   } else if (response) {
+    //     if (body.toString().match('HTTP/1.1 200 OK')) {
+    //       res.send('Your signup has been successfully canceled.');
+    //     } else {
+    //       res.send(response)
+    //     }
+    //   }
+    // });
+  });
+*/
 // then create a separate response for deleting an existing signup, which will
 //   need to match the username with the username in the memo of the event to
 //   cancel
