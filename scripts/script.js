@@ -140,7 +140,7 @@ module.exports = function(robot) {
   // respond to the message "about" in the current channel or DM
   robot.respond(/about/i, function(res) {
     res.send('Slack access to the class snack schedule!\n' +
-      '*@snackbot signup MM-DD* signs you up to bring snacks\n' +
+      '*@snackbot signup MM/DD* signs you up to bring snacks\n' +
       '*@snackbot cal* returns a chronological list of all snack signups\n' +
       '*@snackbot next* returns info on the next scheduled snack night\n' +
       '*@snackbot about* returns overview and list of commands'
