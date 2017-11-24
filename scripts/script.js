@@ -192,11 +192,11 @@ module.exports = function(robot) {
         'DTSTART;TZID=America/Los_Angeles:' + start +
         'DTEND;TZID=America/Los_Angeles:' + end +
 // Swap out for res.envelope when deploying
-        // 'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
-        // 'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
-        // for local testing, as envelope info is limited in CLI
-        'SUMMARY:snacks: Sasha\r\n' +
-        'DESCRIPTION:##sasha##\r\n' +
+         'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
+         'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
+// for local testing, as envelope info is limited in CLI
+//        'SUMMARY:snacks: Sasha\r\n' +
+//        'DESCRIPTION:##sasha##\r\n' +
         'END:VEVENT\r\n' +
         'END:VCALENDAR';
         
@@ -233,7 +233,7 @@ module.exports = function(robot) {
       )
     }
   });
-/*
+
   robot.respond(/cancel(.*)/i, function(res) {
     let request = (res.match[1]).trim();
     let currentDate = new Date();
@@ -297,7 +297,7 @@ module.exports = function(robot) {
     //   }
     // });
   });
-*/
+
 // then create a separate response for deleting an existing signup, which will
 //   need to match the username with the username in the memo of the event to
 //   cancel
