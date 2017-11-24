@@ -233,7 +233,7 @@ module.exports = function(robot) {
       )
     }
   });
-
+/*
   robot.respond(/cancel(.*)/i, function(res) {
     let request = (res.match[1]).trim();
     let currentDate = new Date();
@@ -297,7 +297,7 @@ module.exports = function(robot) {
     //   }
     // });
   });
-
+*/
 // then create a separate response for deleting an existing signup, which will
 //   need to match the username with the username in the memo of the event to
 //   cancel
