@@ -154,7 +154,7 @@ module.exports = function(robot) {
       // and 1 or 2 numbers, then do the signup
       let data = 'BEGIN:VCALENDAR\r\n' + 
         'BEGIN:VEVENT\r\n' +
-        'UID:' + dateString + '.' + res.envelope.user.id + process.env.HEROKU_DOMAIN + '\r\n' +
+        'UID:' + dateString + '.' + res.envelope.user.id + '@' + process.env.HEROKU_DOMAIN + '\r\n' +
         'DTSTART;TZID=America/Los_Angeles:' + start +
         'DTEND;TZID=America/Los_Angeles:' + end +
         // Code for deploy
