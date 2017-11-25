@@ -154,7 +154,7 @@ module.exports = function(robot) {
       // and 1 or 2 numbers, then do the signup
       let data = 'BEGIN:VCALENDAR\r\n' + 
         'BEGIN:VEVENT\r\n' +
-        'UID:' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io\r\n' +
+        'UID:' + dateString + '.' + res.envelope.user.id + process.env.HEROKU_DOMAIN + '\r\n' +
         'DTSTART;TZID=America/Los_Angeles:' + start +
         'DTEND;TZID=America/Los_Angeles:' + end +
         // Code for deploy
@@ -238,7 +238,7 @@ module.exports = function(robot) {
       // process.env.CALENDAR_PATH: iCloud CalDAV path for calendar,
       // consisting of USER_ID/calendar/CALENDAR_ID
       // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
-      .path(process.env.CALENDAR_PATH + '/' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io.ics')
+      .path(process.env.CALENDAR_PATH + '/' + dateString + '.' + res.envelope.user.id + process.env.HEROKU_DOMAIN)
       .delete()(function(err, response, body) {
       if (err) {
           res.send('I couldn\'t cancel your signup right now. Try again in a bit.');
@@ -257,5 +257,6 @@ module.exports = function(robot) {
     }
   });
 
-// TODO: create reminder functionality
+// TODO: abstract http code into a single function
+//       build reminder functionality
 };
