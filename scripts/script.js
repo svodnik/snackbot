@@ -186,9 +186,10 @@ module.exports = function(robot) {
     // if "signup" is immediately followed by 1 or 2 numbers, a separator, 
     // and 1 or 2 numbers, then do the signup
     if (request && (request.match(/^\d{1,2}\W\d{1,2}/))) {
+      console.log('"' + res.envelope.user.id + '"');
       let data = 'BEGIN:VCALENDAR\r\n' + 
         'BEGIN:VEVENT\r\n' +
-        'UID:' + dateString + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
+        'UID:' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io\r\n' +
         'DTSTART;TZID=America/Los_Angeles:' + start +
         'DTEND;TZID=America/Los_Angeles:' + end +
 // Swap out for res.envelope when deploying
@@ -199,7 +200,9 @@ module.exports = function(robot) {
 //        'DESCRIPTION:##sasha##\r\n' +
         'END:VEVENT\r\n' +
         'END:VCALENDAR';
-        
+
+      console.log(data);
+
       // process.env.CALENDAR_URL: iCloud calendar URL
       robot.http(process.env.CALENDAR_URL)
       .header('Content-Type', 'text/calendar; charset=utf-8')
@@ -216,6 +219,7 @@ module.exports = function(robot) {
         } else if (response) {
           if (body.toString().match('HTTP/1.1 200 OK')) {
             res.send('You\'re signed up for snacks on ' + new Date(startDate).toLocaleDateString() + '!');
+            console.log(body);
           } else {
             res.send(body)
           }
@@ -233,7 +237,7 @@ module.exports = function(robot) {
       )
     }
   });
-/*
+
   robot.respond(/cancel(.*)/i, function(res) {
     let request = (res.match[1]).trim();
     let currentDate = new Date();
@@ -267,7 +271,7 @@ module.exports = function(robot) {
 
     let data = 'BEGIN:VCALENDAR\r\n' + 
       'BEGIN:VEVENT\r\n' +
-      'UID:' + dateString + '.' + res.envelope.user.id + '-@svodnik.github.io\r\n' +
+      'UID:' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io\r\n' +
       'DTSTART;TZID=America/Los_Angeles:' + start +
       'DTEND;TZID=America/Los_Angeles:' + end +
       'END:VEVENT\r\n' +
@@ -284,20 +288,24 @@ module.exports = function(robot) {
     // process.env.CALENDAR_PATH: iCloud CalDAV path for calendar,
     // consisting of USER_ID/calendar/CALENDAR_ID
     // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
-    .path(process.env.CALENDAR_PATH)
-    // .delete(data)(function(err, response, body) {
-    //   if (err) {
-    //     res.send('I couldn\'t cancel your signup right now. Try again in a bit.');
-    //   } else if (response) {
-    //     if (body.toString().match('HTTP/1.1 200 OK')) {
-    //       res.send('Your signup has been successfully canceled.');
-    //     } else {
-    //       res.send(response)
-    //     }
-    //   }
-    // });
+    .path(process.env.CALENDAR_PATH + '/' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io.ics')
+    .delete(data)(function(err, response, body) {
+      if (err) {
+        res.send('I couldn\'t cancel your signup right now. Try again in a bit.');
+        console.log('Error: ' + err);
+      } else if (response) {
+        if (body.toString().match('HTTP/1.1 200 OK')) {
+          res.send('Your signup has been successfully canceled.');
+          console.log('Response: ' + response);
+          console.log('Body: ' + body);
+        } else {
+          console.log('Response: ' + response);
+          console.log('Body: ' + body);
+        }
+      }
+    });
   });
-*/
+
 // then create a separate response for deleting an existing signup, which will
 //   need to match the username with the username in the memo of the event to
 //   cancel
