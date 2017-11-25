@@ -152,8 +152,8 @@ module.exports = function(robot) {
   robot.respond(/signup(.*)/i, function(res) {
     // if the request contains a date, substring it into 2-digit month and
     // 2-digit day
+    let request = (res.match[1]).trim();
     if (request && (request.match(/^\d{1,2}\W\d{1,2}/))) {
-      let request = (res.match[1]).trim();
       let currentDate = new Date();
       let year;
       let month;
@@ -235,8 +235,8 @@ module.exports = function(robot) {
   });
 
   robot.respond(/cancel(.*)/i, function(res) {
+    let request = (res.match[1]).trim();    
     if (request && request.match(/^\d{1,2}\W\d{1,2}/)) {
-      let request = (res.match[1]).trim();
       let currentDate = new Date();
       let year;
       let month;
