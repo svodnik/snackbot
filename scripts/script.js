@@ -238,7 +238,7 @@ module.exports = function(robot) {
       // process.env.CALENDAR_PATH: iCloud CalDAV path for calendar,
       // consisting of USER_ID/calendar/CALENDAR_ID
       // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
-      .path(process.env.CALENDAR_PATH + '/' + dateString + '.' + res.envelope.user.id + '@' + process.env.HEROKU_DOMAIN)
+      .path(process.env.CALENDAR_PATH + '/' + dateString + '.' + res.envelope.user.id + '@' + process.env.HEROKU_DOMAIN + '.ics')
       .delete()(function(err, response, body) {
       if (err) {
           res.send('I couldn\'t cancel your signup right now. Try again in a bit.');
