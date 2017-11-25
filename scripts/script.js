@@ -260,18 +260,18 @@ module.exports = function(robot) {
         year = currentDate.getFullYear().toString();
       }
 
-      let startDate = new Date (year, (month - 1), day);
+//      let startDate = new Date (year, (month - 1), day);
       let dateString = year.toString() + month + day;
-      let start = dateString + 'T180000\r\n';
-      let end = dateString + 'T183000\r\n';
+//      let start = dateString + 'T180000\r\n';
+//      let end = dateString + 'T183000\r\n';
 
-      let data = 'BEGIN:VCALENDAR\r\n' + 
-        'BEGIN:VEVENT\r\n' +
-        'UID:' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io\r\n' +
-        'DTSTART;TZID=America/Los_Angeles:' + start +
-        'DTEND;TZID=America/Los_Angeles:' + end +
-        'END:VEVENT\r\n' +
-        'END:VCALENDAR';
+      // let data = 'BEGIN:VCALENDAR\r\n' + 
+      //   'BEGIN:VEVENT\r\n' +
+      //   'UID:' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io\r\n' +
+      //   'DTSTART;TZID=America/Los_Angeles:' + start +
+      //   'DTEND;TZID=America/Los_Angeles:' + end +
+      //   'END:VEVENT\r\n' +
+      //   'END:VCALENDAR';
 
       console.log(data);
 
@@ -285,8 +285,9 @@ module.exports = function(robot) {
       // consisting of USER_ID/calendar/CALENDAR_ID
       // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
       .path(process.env.CALENDAR_PATH + '/' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io.ics')
-      .delete(data)(function(err, response, body) {
-        if (err) {
+      // .delete(data)(function(err, response, body) {
+      .delete()(function(err, response, body) {
+      if (err) {
           res.send('I couldn\'t cancel your signup right now. Try again in a bit.');
         } else {
           res.send('Your signup has been successfully canceled.');
@@ -297,15 +298,11 @@ module.exports = function(robot) {
       '`@snackbot cancel MM/DD`\n' +
       'where `MM` is a month value and `DD` is a day value\n' +
       'like `@snackbot cancel 11/30`\n' +
-      'Note that you can cancel only your own signups.' +
+      'Note that you can cancel only your own signups.\n' +
       'Use `@snackbot about` for additional commands.'
       )
     }
   });
 
-// then create a separate response for deleting an existing signup, which will
-//   need to match the username with the username in the memo of the event to
-//   cancel
-
-// then create reminder functionality
+// TODO: create reminder functionality
 };
