@@ -12,6 +12,14 @@ available, etc!
 [hubot]: http://hubot.github.com
 [generator-hubot]: https://github.com/github/generator-hubot
 
+## snackbot commands
+
+* **@snackbot signup MM/DD** signs you up to bring snacks
+* **@snackbot cancel MM/DD** cancels an existing signup
+* **@snackbot cal** returns a chronological list of all snack signups
+* **@snackbot next** returns info on the next scheduled snack night
+* **@snackbot about** returns overview and list of commands
+
 ### Running snackbot Locally
 
 You can test your hubot by running the following, however some plugins will not
