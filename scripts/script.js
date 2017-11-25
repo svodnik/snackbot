@@ -273,7 +273,7 @@ module.exports = function(robot) {
       //   'END:VEVENT\r\n' +
       //   'END:VCALENDAR';
 
-      console.log(data);
+      //console.log(data);
 
       // process.env.CALENDAR_URL: iCloud calendar URL
       robot.http(process.env.CALENDAR_URL)
