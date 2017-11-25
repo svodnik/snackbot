@@ -16,7 +16,8 @@ var url = 'http://p53-calendars.icloud.com/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9
 
 module.exports = function(robot) {
   // create a new snacks array to store selected calendar events
-  var snacks = [{
+  let message = '';
+  let snacks = [{
     summary: 'today',
     start: new Date()
   }];
@@ -38,38 +39,6 @@ module.exports = function(robot) {
       snacks[k].summary.substr(8) +
       '\n'
     );
-  }
-
-  function addSignup(date,fname,handle) {
-    let identifier = Math.random() * 10000;
-    let dateString = date.getUTCFullYear().toString() + (date.getUTCMonth() + 1).toString() + date.getUTCDate().toString();
-    let data = 'BEGIN:VCALENDAR\r\n' +
-      'BEGIN:VEVENT\r\n' +
-      'UID:' + dateString + 'T' + date.getUTCHours().toString() + date.getUTCMinutes().toString() + date.getUTCSeconds().toString() + 'Z' + identifier + '-@svodnik.github.io\r\n' +
-      'DTEND:' + dateString + 'T023000Z\r\n' +
-      'SUMMARY:snacks: ' + fname + '\r\n' +
-      'DTSTART:' + dateString + 'T020000Z\r\n' +
-      'DESCRIPTION:##' + handle + '##\r\n' +
-      'END:VEVENT\r\n' +
-      'END:VCALENDAR';
-      
-    robot.http('p53-calendars.icloud.com')
-      .header('Content-Type', 'text/calendar; charset=utf-8')
-      .path('/published/2/2ex0lsKSpKz_G7fuIIgWRjMw9qBcWTRwvcAITf_nt4mWYp5yVBwlrrwbD2l33Op_404hELgNniz2QpyIN4S5b6d-DmBH8MYkE6fCwdMJJw8')
-      .post(data)(function(err, response, body) {
-        if (err) {
-          res.send('Err: ');
-        }
-        if (response) {
-          res.send('Response: ');
-        }
-        if (body) {
-          res.send('Body: ');
-        }
-      });
-      // getting an error
-      // next step: specify dependencies:
-      // https://stackoverflow.com/questions/15274035/add-post-support-to-hubot#28716542
   }
 
   // use ical npm module to get calendar data from class calendar
@@ -110,7 +79,6 @@ module.exports = function(robot) {
   // respond to the message "cal" in the current channel or DM
   robot.respond(/cal/i, function(res) {
     // respond with each item in the sorted snacks array
-    var message = '';
     for (var k in snacks) {
       // if the summary value of the current element is 'today', skip it
       if (snacks[k].summary !== 'today') {
@@ -122,7 +90,6 @@ module.exports = function(robot) {
 
   // respond to the message "next" in the current channel or DM
   robot.respond(/next/i, function(res) {
-    var message = '';
     // get the array index for the element representing today
     var today = snacks.map(function(el) {
       return el.summary;
@@ -190,10 +157,10 @@ module.exports = function(robot) {
         'UID:' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io\r\n' +
         'DTSTART;TZID=America/Los_Angeles:' + start +
         'DTEND;TZID=America/Los_Angeles:' + end +
-  // Swap out for res.envelope when deploying
-          'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
-          'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
-  // for local testing, as envelope info is limited in CLI
+        // Code for deploy
+        'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
+        'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
+  // Code for local testing, as envelope info in above 2 lines is limited in CLI
   //        'SUMMARY:snacks: Sasha\r\n' +
   //        'DESCRIPTION:##sasha##\r\n' +
         'END:VEVENT\r\n' +
@@ -260,20 +227,7 @@ module.exports = function(robot) {
         year = currentDate.getFullYear().toString();
       }
 
-//      let startDate = new Date (year, (month - 1), day);
       let dateString = year.toString() + month + day;
-//      let start = dateString + 'T180000\r\n';
-//      let end = dateString + 'T183000\r\n';
-
-      // let data = 'BEGIN:VCALENDAR\r\n' + 
-      //   'BEGIN:VEVENT\r\n' +
-      //   'UID:' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io\r\n' +
-      //   'DTSTART;TZID=America/Los_Angeles:' + start +
-      //   'DTEND;TZID=America/Los_Angeles:' + end +
-      //   'END:VEVENT\r\n' +
-      //   'END:VCALENDAR';
-
-      //console.log(data);
 
       // process.env.CALENDAR_URL: iCloud calendar URL
       robot.http(process.env.CALENDAR_URL)
@@ -285,7 +239,6 @@ module.exports = function(robot) {
       // consisting of USER_ID/calendar/CALENDAR_ID
       // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
       .path(process.env.CALENDAR_PATH + '/' + dateString + '.' + res.envelope.user.id + '@svodnik.github.io.ics')
-      // .delete(data)(function(err, response, body) {
       .delete()(function(err, response, body) {
       if (err) {
           res.send('I couldn\'t cancel your signup right now. Try again in a bit.');
