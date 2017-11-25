@@ -160,9 +160,9 @@ module.exports = function(robot) {
         // Code for deploy
         'SUMMARY:snacks: ' + res.envelope.user.profile.first_name + '\r\n' +
         'DESCRIPTION:##' + res.envelope.user.profile.display_name + '##\r\n' +
-  // Code for local testing, as envelope info in above 2 lines is limited in CLI
-  //        'SUMMARY:snacks: Sasha\r\n' +
-  //        'DESCRIPTION:##sasha##\r\n' +
+// Code for local testing, as envelope info in above 2 lines is limited in CLI
+//          'SUMMARY:snacks: Sasha\r\n' +
+//          'DESCRIPTION:##sasha##\r\n' +
         'END:VEVENT\r\n' +
         'END:VCALENDAR';
 
@@ -177,15 +177,12 @@ module.exports = function(robot) {
       // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
       .path(process.env.CALENDAR_PATH)
       .post(data)(function(err, response, body) {
-        if (err) {
+        if ((response) &&
+            (response.statusCode === 200) ||
+            (response.statusCode === 207)) {
+          res.send('You\'re signed up for snacks on ' + new Date(startDate).toLocaleDateString() + '!');
+        } else {
           res.send('I couldn\'t sign you up right now. Try again in a bit.');
-        } else if (response) {
-          if (body.toString().match('HTTP/1.1 200 OK')) {
-            res.send('You\'re signed up for snacks on ' + new Date(startDate).toLocaleDateString() + '!');
-            console.log(body);
-          } else {
-            res.send(body)
-          }
         }
       });
 
@@ -240,11 +237,12 @@ module.exports = function(robot) {
       // http://www.ict4g.net/adolfo/notes/2015/07/04/determing-url-of-caldav.html
       .path(process.env.CALENDAR_PATH + '/' + dateString + '.' + res.envelope.user.id + '@' + process.env.HEROKU_DOMAIN + '.ics')
       .delete()(function(err, response, body) {
-      if (err) {
-          res.send('I couldn\'t cancel your signup right now. Try again in a bit.');
-        } else {
+      if ((response.statusCode === 200) ||
+          (response.statusCode === 204)) {
           res.send('Your signup has been successfully canceled.');
-        }
+        } else {
+          res.send('I couldn\'t cancel your signup right now. Try again in a bit.');
+        }  
       });
     } else {
       res.send('To cancel a snack signup, use the following syntax:\n' +
